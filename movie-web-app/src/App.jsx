@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import Search from './components/Search.jsx';
 import Spinner from './components/Spinner.jsx';
+import MovieCard from "./components/MovieCard.jsx";
+import {useThrottle} from "./hooks/useThrottle.js";
+
 
 const API_BASE_URL = "https://api.themoviedb.org/3/";
 
@@ -14,16 +17,19 @@ const API_OPTIONS = {
 }
 const App = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [errorMessage, setErrorMessage] = useState('')
-    const [movieList, setMovieList] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('');
+    const [movieList, setMovieList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const fetchMovies = async () => {
-        setIsLoading(true);
+    const throttledSearchTerm = useThrottle(searchTerm, 1000);
+
+    const fetchMovies = async (query = '') => {
+                setIsLoading(true);
         setErrorMessage('');
 
         try{
-            const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+            const endpoint = query ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+                : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
 
             const response = await fetch(endpoint, API_OPTIONS);
 
@@ -49,8 +55,8 @@ const App = () => {
     }
 
     useEffect(() => {
-        fetchMovies();
-    }, [])
+        fetchMovies(throttledSearchTerm);
+    }, [throttledSearchTerm])
 
     return (
       <main>
@@ -75,7 +81,7 @@ const App = () => {
                 ): (
                     <ul>
                         {movieList.map(movie => (
-                            <p key={movie.id} className={"text-white"}> {movie.title}</p>
+                            <MovieCard key={movie.id} movie={movie} />
                         ))}
                     </ul>
                 )}

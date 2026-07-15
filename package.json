@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@reactuses/core": "^6.4.0",
     "@tailwindcss/vite": "^4.3.2",
+    "@uidotdev/usehooks": "^2.4.1",
     "tailwindcss": "^4.3.2"
   }
 }
