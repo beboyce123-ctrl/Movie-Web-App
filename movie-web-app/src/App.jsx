@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Search from './components/Search.jsx';
 import Spinner from './components/Spinner.jsx';
 import MovieCard from "./components/MovieCard.jsx";
-import {useThrottle} from "./hooks/useThrottle.js";
+import {useDebounce} from "./hooks/useDebounce.js";
 
 
 const API_BASE_URL = "https://api.themoviedb.org/3/";
@@ -21,7 +21,7 @@ const App = () => {
     const [movieList, setMovieList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const throttledSearchTerm = useThrottle(searchTerm, 1000);
+    const throttledSearchTerm = useDebounce(searchTerm);
 
     const fetchMovies = async (query = '') => {
                 setIsLoading(true);
