@@ -22,10 +22,10 @@ const App = () => {
     const [movieList, setMovieList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const throttledSearchTerm = useDebounce(searchTerm);
+    const debouncedSearchTerm = useDebounce(searchTerm);
 
     const fetchMovies = async (query = '') => {
-                setIsLoading(true);
+        setIsLoading(true);
         setErrorMessage('');
 
         try{
@@ -39,6 +39,8 @@ const App = () => {
             }
 
             const data = await response.json();
+            console.log(data);
+            console.log(data.results);
 
             if(data.Response === 'False'){
                 setErrorMessage(data.Error || "Failed to fetch movies");
@@ -49,7 +51,7 @@ const App = () => {
             setMovieList(data.results || []);
 
             if(query && data.results.length > 0){
-                await updateSearchCount(query, data.results);
+                await updateSearchCount(query, data.results[0]);
             }
 
         } catch (error){
@@ -61,8 +63,10 @@ const App = () => {
     }
 
     useEffect(() => {
-        fetchMovies(throttledSearchTerm);
-    }, [throttledSearchTerm])
+        fetchMovies(debouncedSearchTerm);
+    }, [debouncedSearchTerm])
+
+
 
     return (
       <main>
