@@ -14,7 +14,8 @@ const API_OPTIONS = {
     method: 'GET',
     headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${API_KEY}`},
+        Authorization: `Bearer ${API_KEY}`
+    },
 }
 const App = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -31,19 +32,19 @@ const App = () => {
         setIsLoading(true);
         setErrorMessage('');
 
-        try{
+        try {
             const endpoint = query ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
                 : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
 
             const response = await fetch(endpoint, API_OPTIONS);
 
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error(`Failed to fetch movies`);
             }
 
             const data = await response.json();
 
-            if(data.Response === 'False'){
+            if (data.Response === 'False') {
                 setErrorMessage(data.Error || "Failed to fetch movies");
                 setMovieList([]);
                 return;
@@ -51,11 +52,11 @@ const App = () => {
 
             setMovieList(data.results || []);
 
-            if(query && data.results.length > 0){
+            if (query && data.results.length > 0) {
                 await updateSearchCount(query, data.results[0]);
             }
 
-        } catch (error){
+        } catch (error) {
             console.log(`Error fetching movies for ${error}`);
             setErrorMessage(`Error fetching movies. Please try again`);
         } finally {
@@ -64,10 +65,10 @@ const App = () => {
     }
 
     const loadTrendingMovies = async (query = '') => {
-        try{
+        try {
             const movies = await getTendingMovies();
             setTrendingMovies(movies);
-        }catch(error){
+        } catch (error) {
             console.error(`Error fetching trending movies: ${error}`);
         }
     }
@@ -81,51 +82,51 @@ const App = () => {
     }, []);
 
     return (
-      <main>
+        <main>
 
-        <div className={"pattern"} />
+            <div className={"pattern"}/>
 
-        <div className={"wrapper"}>
-          <header>
-              <img src={"./hero-img.png"} alt="Hero Banner"/>
-            <h1>Find <span className={"text-gradient"}>Movies</span> You'll Enjoy Without the Hassle</h1>
+            <div className={"wrapper"}>
+                <header>
+                    <img src={"./hero-img.png"} alt="Hero Banner"/>
+                    <h1>Find <span className={"text-gradient"}>Movies</span> You'll Enjoy Without the Hassle</h1>
 
-              <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          </header>
+                    <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+                </header>
 
-            {trendingMovies.length > 0 && (
-                <section className={"trending"}>
-                    <h2>Trending Movies</h2>
+                {trendingMovies.length > 0 && (
+                    <section className={"trending"}>
+                        <h2>Trending Movies</h2>
 
-                    <ul>
-                        {trendingMovies.map((movie, index) => (
-                            <li key={movie.$id}>
-                                <p>{index + 1}</p>
-                                <img src={movie.poster_url} alt={movie.title}/>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-            )}
-
-            <section className="all-movies">
-                <h2 className={"mt-[40px]"}>All Movies</h2>
-
-                {isLoading ? (
-                    <Spinner />
-                ): errorMessage ? (
-                    <p className={"text-red-500"}>{errorMessage}</p>
-                ): (
-                    <ul>
-                        {movieList.map(movie => (
-                            <MovieCard key={movie.id} movie={movie} />
-                        ))}
-                    </ul>
+                        <ul>
+                            {trendingMovies.map((movie, index) => (
+                                <li key={movie.$id}>
+                                    <p>{index + 1}</p>
+                                    <img src={movie.poster_url} alt={movie.title}/>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
                 )}
-            </section>
 
-        </div>
-      </main>
+                <section className="all-movies">
+                    <h2 className={"mt-[40px]"}>All Movies</h2>
+
+                    {isLoading ? (
+                        <Spinner/>
+                    ) : errorMessage ? (
+                        <p className={"text-red-500"}>{errorMessage}</p>
+                    ) : (
+                        <ul>
+                            {movieList.map(movie => (
+                                <MovieCard key={movie.id} movie={movie}/>
+                            ))}
+                        </ul>
+                    )}
+                </section>
+
+            </div>
+        </main>
     )
 }
 
